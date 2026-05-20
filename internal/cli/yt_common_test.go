@@ -1,4 +1,4 @@
-// Copyright 2026 ryandacoder. Licensed under Apache-2.0. See LICENSE.
+// Copyright 2026 Ryan Collins. Licensed under Apache-2.0. See LICENSE.
 
 package cli
 

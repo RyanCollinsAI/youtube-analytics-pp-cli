@@ -1,7 +1,7 @@
 ---
 name: pp-youtube-analytics
 description: "YouTube Analytics CLI with a local archive: period-over-period deltas, multi-channel rollups, RPM tracking, and anomaly detection. Trigger phrases: `how did ScrollCore do last week`, `youtube revenue this month`, `top performing youtube video this month`, `check my youtube channel analytics`, `youtube rpm trend`, `use youtube-analytics`, `run youtube-analytics`."
-author: "RyanDaCoder"
+author: "RyanCollinsAI"
 license: "Apache-2.0"
 argument-hint: "<command> [args] | install cli|mcp"
 allowed-tools: "Read Bash"

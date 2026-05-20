@@ -42,9 +42,9 @@ checksum:
 brews:
   - name: youtube-analytics-pp-cli
     repository:
-      owner: ryandacoder
+      owner: RyanCollinsAI
       name: homebrew-tap
-    homepage: "https://github.com/ryandacoder/youtube-analytics-pp-cli"
+    homepage: "https://github.com/RyanCollinsAI/youtube-analytics-pp-cli"
     description: "The YouTube Analytics CLI with a local archive — period-over-period deltas, multi-channel rollups, and anomaly..."
     install: |
       bin.install "youtube-analytics-pp-cli"

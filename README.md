@@ -6,7 +6,7 @@ YouTube Analytics has one deep endpoint, reports.query, and a hostile column-arr
 
 Learn more at [YouTube Analytics](https://google.com).
 
-Printed by [@RyanCollinsAI](https://github.com/RyanCollinsAI) (RyanDaCoder).
+Printed by [@RyanCollinsAI](https://github.com/RyanCollinsAI).
 
 ## Install
 
