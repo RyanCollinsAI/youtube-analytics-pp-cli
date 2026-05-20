@@ -1,0 +1,28 @@
+# Compiled binaries
+/youtube-analytics-pp-cli
+/youtube-analytics-pp-cli.exe
+/youtube-analytics-pp-mcp
+/youtube-analytics-pp-mcp.exe
+*.exe
+
+# Build / packaging output
+/build/
+/dist/
+
+# Local SQLite archive
+*.db
+*.db-wal
+*.db-shm
+
+# Verification run artifacts
+dogfood-results.json
+workflow-verify-report.json
+
+# Printing Press internal run state
+.printing-press-patches.json
+.printing-press-pii-polish.json
+.printing-press-tools-polish.json
+
+# OS noise
+.DS_Store
+Thumbs.db

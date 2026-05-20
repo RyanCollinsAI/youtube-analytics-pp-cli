@@ -1,0 +1,51 @@
+version: 2
+project_name: youtube-analytics-pp-cli
+changelog:
+  disable: true
+builds:
+  - id: youtube-analytics-pp-cli
+    main: ./cmd/youtube-analytics-pp-cli
+    binary: youtube-analytics-pp-cli
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X youtube-analytics-pp-cli/internal/cli.version={{ .Version }}
+    targets:
+      - darwin_amd64
+      - darwin_arm64
+      - linux_amd64
+      - linux_arm64
+      - windows_amd64
+      - windows_arm64
+  - id: youtube-analytics-pp-mcp
+    main: ./cmd/youtube-analytics-pp-mcp
+    binary: youtube-analytics-pp-mcp
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+    targets:
+      - darwin_amd64
+      - darwin_arm64
+      - linux_amd64
+      - linux_arm64
+      - windows_amd64
+      - windows_arm64
+archives:
+  - formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+checksum:
+  name_template: checksums.txt
+brews:
+  - name: youtube-analytics-pp-cli
+    repository:
+      owner: ryandacoder
+      name: homebrew-tap
+    homepage: "https://github.com/ryandacoder/youtube-analytics-pp-cli"
+    description: "The YouTube Analytics CLI with a local archive — period-over-period deltas, multi-channel rollups, and anomaly..."
+    install: |
+      bin.install "youtube-analytics-pp-cli"
+      bin.install "youtube-analytics-pp-mcp"

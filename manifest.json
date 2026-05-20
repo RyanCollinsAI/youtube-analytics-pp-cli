@@ -1,0 +1,39 @@
+{
+  "manifest_version": "0.3",
+  "name": "youtube-analytics-pp-mcp",
+  "display_name": "Youtube Analytics",
+  "version": "4.9.0",
+  "description": "Youtube Analytics API surface as MCP tools.",
+  "author": {
+    "name": "CLI Printing Press"
+  },
+  "license": "Apache-2.0",
+  "server": {
+    "type": "binary",
+    "entry_point": "bin/youtube-analytics-pp-mcp",
+    "mcp_config": {
+      "command": "${__dirname}/bin/youtube-analytics-pp-mcp",
+      "args": [],
+      "env": {
+        "YOUTUBE_ANALYTICS_OAUTH2C": "${user_config.youtube_analytics_oauth2c}"
+      }
+    }
+  },
+  "user_config": {
+    "youtube_analytics_oauth2c": {
+      "type": "string",
+      "title": "YOUTUBE_ANALYTICS_OAUTH2C",
+      "description": "Sets YOUTUBE_ANALYTICS_OAUTH2C for the Youtube Analytics MCP server.",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "compatibility": {
+    "claude_desktop": ">=1.0.0",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ]
+  }
+}

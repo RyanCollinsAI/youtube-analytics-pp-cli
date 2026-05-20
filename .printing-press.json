@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-20T05:45:56.1700469Z",
+  "printing_press_version": "4.9.0",
+  "api_name": "youtube-analytics",
+  "display_name": "Youtube Analytics",
+  "cli_name": "youtube-analytics-pp-cli",
+  "owner": "ryandacoder",
+  "printer": "RyanCollinsAI",
+  "printer_name": "RyanDaCoder",
+  "spec_format": "openapi3",
+  "spec_checksum": "sha256:4658af542782dde44407645d4c1f10684485652e19b861f1a0609111fb36b047",
+  "run_id": "20260519-215746",
+  "mcp_binary": "youtube-analytics-pp-mcp",
+  "mcp_tool_count": 8,
+  "mcp_ready": "full",
+  "api_version": "v2",
+  "auth_type": "bearer_token",
+  "auth_env_vars": [
+    "YOUTUBE_ANALYTICS_OAUTH2C"
+  ],
+  "novel_features": [
+    {
+      "name": "Sync to local archive",
+      "command": "sync",
+      "description": "Pull daily YouTube Analytics rows into a local SQLite archive so trends, comparisons, and history work offline."
+    },
+    {
+      "name": "Channel report card",
+      "command": "report",
+      "description": "Views, watch time, subscribers, and revenue for a period with the prior equal period and a delta beside each metric."
+    },
+    {
+      "name": "Multi-channel rollup",
+      "command": "rollup",
+      "description": "Every registered channel side by side for one period, one row per channel, sorted by views or revenue."
+    },
+    {
+      "name": "What-changed digest",
+      "command": "whatchanged",
+      "description": "Diffs two periods across every synced dimension and ranks the biggest movers — traffic sources, videos, revenue."
+    },
+    {
+      "name": "Anomaly flag",
+      "command": "anomaly",
+      "description": "Flags metrics in the latest finalized period that fall outside the trailing mean and standard deviation."
+    },
+    {
+      "name": "RPM tracker",
+      "command": "rpm",
+      "description": "Monthly RPM, CPM, and monetized playbacks as a stable series after trailing re-sync settles late revenue adjustments."
+    },
+    {
+      "name": "Top-movers",
+      "command": "movers",
+      "description": "Ranks videos by week-over-week view delta, surfacing both risers and faders."
+    },
+    {
+      "name": "SQL escape hatch",
+      "command": "sql",
+      "description": "Runs read-only SQL directly against the local analytics archive for any aggregation the presets do not cover."
+    },
+    {
+      "name": "Channel registry",
+      "command": "channels",
+      "description": "Maps friendly names like ScrollCore to channel IDs and credential sets so every command takes --channel by name."
+    }
+  ]
+}
