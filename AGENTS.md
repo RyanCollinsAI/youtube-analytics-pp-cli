@@ -60,6 +60,6 @@ Minimum shape:
 }
 ```
 
-This file is an **index of customizations**, not a second copy of the diff. Diffs live in `git`; the manifest is what tells the next agent (or regeneration tooling) what was customized and why. Keep `summary` and `reason` short -- if you find yourself writing tables of field renames or code transformations, that detail belongs in the commit message, not here.
+This file is an **index of customizations**, not a second copy of the diff. Diffs live in `git`; the manifest is what tells the next agent (or regeneration tooling) what was customized and why. Keep `summary` and `reason` short. If you find yourself writing tables of field renames or code transformations, that detail belongs in the commit message, not here.
 
-Inline `// PATCH:` source comments are optional. If you find them helpful as a navigation aid (`grep -rn 'PATCH' .` surfaces customized sites), feel free to add them -- but they aren't required and aren't enforced by any CI.
+Inline `// PATCH:` source comments are optional. If you find them helpful as a navigation aid (`grep -rn 'PATCH' .` surfaces customized sites), feel free to add them, but they aren't required and aren't enforced by any CI.

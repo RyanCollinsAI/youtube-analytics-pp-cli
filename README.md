@@ -1,12 +1,12 @@
 # YouTube Analytics CLI
 
-**The YouTube Analytics CLI with a local archive — period-over-period deltas, multi-channel rollups, and anomaly detection no single API call can give you.**
+A command-line tool for the YouTube Analytics API. It keeps a local copy of your daily numbers, which is what lets it compare one period against another, line several channels up side by side, and flag a day that looks off. The plain API can't do any of that on its own.
 
-YouTube Analytics has one deep endpoint, reports.query, and a hostile column-array response. This CLI wraps it in named report presets (overview, top-videos, traffic, retention, revenue, demographics) and decodes the response into clean labeled tables. It also syncs daily rows into a local SQLite archive, which is what makes report deltas, whatchanged diffs, anomaly detection, and multi-channel rollups possible offline.
+The YouTube Analytics API is really one endpoint, `reports.query`, and it answers with a column-array response that is awkward to read. This CLI wraps that endpoint in named reports (overview, top-videos, traffic, retention, revenue, demographics) and prints clean labeled tables instead. It also syncs your daily rows into a local SQLite database. That local copy is the part that matters: it is what makes period deltas, whatchanged diffs, anomaly checks, and multi-channel rollups work without re-querying the API every time.
 
-Learn more at [YouTube Analytics](https://google.com).
+Learn more about the API in [Google's YouTube Analytics docs](https://developers.google.com/youtube/analytics).
 
-Printed by [@RyanCollinsAI](https://github.com/RyanCollinsAI).
+Built by [@RyanCollinsAI](https://github.com/RyanCollinsAI).
 
 ## Install
 
@@ -16,19 +16,19 @@ The recommended path installs both the `youtube-analytics-pp-cli` binary and the
 npx -y @mvanhorn/printing-press install youtube-analytics
 ```
 
-For CLI only (no skill):
+For the CLI only (no skill):
 
 ```bash
 npx -y @mvanhorn/printing-press install youtube-analytics --cli-only
 ```
 
-For skill only — installs the skill into the same agents as the default command above, but skips the CLI binary (use this to update or reinstall just the skill):
+For the skill only (this skips the CLI binary, so use it to update or reinstall just the skill):
 
 ```bash
 npx -y @mvanhorn/printing-press install youtube-analytics --skill-only
 ```
 
-To constrain the skill install to one or more specific agents (repeatable — agent names match the [`skills`](https://github.com/vercel-labs/skills) CLI):
+To limit the skill install to one or more specific agents (repeatable; agent names match the [`skills`](https://github.com/vercel-labs/skills) CLI):
 
 ```bash
 npx -y @mvanhorn/printing-press install youtube-analytics --agent claude-code
@@ -68,7 +68,7 @@ Install the pp-youtube-analytics skill from https://github.com/mvanhorn/printing
 
 ## Use with Claude Desktop
 
-This CLI ships an [MCPB](https://github.com/modelcontextprotocol/mcpb) bundle — Claude Desktop's standard format for one-click MCP extension installs (no JSON config required).
+This CLI ships an [MCPB](https://github.com/modelcontextprotocol/mcpb) bundle, which is Claude Desktop's standard format for one-click MCP extension installs (no JSON config required).
 
 To install:
 
@@ -76,7 +76,7 @@ To install:
 2. Double-click the `.mcpb` file. Claude Desktop opens and walks you through the install.
 3. Fill in `YOUTUBE_CLIENT_ID`, `YOUTUBE_CLIENT_SECRET`, and `YOUTUBE_REFRESH_TOKEN` when Claude Desktop prompts you.
 
-Requires Claude Desktop 1.0.0 or later. Pre-built bundles ship for macOS Apple Silicon (`darwin-arm64`) and Windows (`amd64`, `arm64`); for other platforms, use the manual config below.
+Requires Claude Desktop 1.0.0 or later. Pre-built bundles ship for macOS Apple Silicon (`darwin-arm64`) and Windows (`amd64`, `arm64`). For other platforms, use the manual config below.
 
 <details>
 <summary>Manual JSON config (advanced)</summary>
@@ -107,9 +107,9 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 
 ## Authentication
 
-YouTube Analytics is private per-channel data — there is no API-key path. The CLI uses the OAuth 2.0 refresh-token grant: set YOUTUBE_CLIENT_ID, YOUTUBE_CLIENT_SECRET, and YOUTUBE_REFRESH_TOKEN (from your Google Cloud project, with the yt-analytics.readonly scope), and the CLI exchanges the refresh token for a short-lived access token on each run. No browser dance, no token files to babysit.
+YouTube Analytics is private, per-channel data, so there is no API-key path. The CLI authenticates with an OAuth 2.0 refresh token. You give it a client ID, a client secret, and a refresh token, and it trades the refresh token for a short-lived access token on every run. There is no browser step at runtime and no token file to keep track of.
 
-**Recommended — environment variables.** Create an OAuth 2.0 client in a Google Cloud project, then export three variables:
+**Recommended: environment variables.** Create an OAuth 2.0 client in a Google Cloud project, then export three variables:
 
 ```bash
 export YOUTUBE_CLIENT_ID=<your-oauth-client-id>
@@ -117,22 +117,22 @@ export YOUTUBE_CLIENT_SECRET=<your-oauth-client-secret>
 export YOUTUBE_REFRESH_TOKEN=<your-refresh-token>
 ```
 
-The refresh token must be scoped `https://www.googleapis.com/auth/yt-analytics.readonly`. Add `https://www.googleapis.com/auth/yt-analytics-monetary.readonly` if you want revenue metrics. The CLI exchanges the refresh token for a short-lived access token automatically on every run.
+Scope the refresh token to `https://www.googleapis.com/auth/yt-analytics.readonly`. Add `https://www.googleapis.com/auth/yt-analytics-monetary.readonly` if you want revenue metrics.
 
-**Interactive alternative — `auth login`.** If you would rather not mint a refresh token by hand, run the browser OAuth flow and let the CLI store the tokens in its config file:
+**Interactive alternative: `auth login`.** If you would rather not mint a refresh token by hand, run the browser OAuth flow and let the CLI store the tokens in its config file:
 
 ```bash
 youtube-analytics-pp-cli auth login --client-id <id> --client-secret <secret>
 ```
 
-**Auth subcommands:**
+The auth subcommands:
 
-- `youtube-analytics-pp-cli auth setup` — prints the steps for registering a Google Cloud OAuth app (add `--launch` to open the page).
-- `youtube-analytics-pp-cli auth login --client-id <id> --client-secret <secret>` — runs the browser OAuth flow and saves tokens.
-- `youtube-analytics-pp-cli auth status` — shows current credential state.
-- `youtube-analytics-pp-cli auth logout` — clears stored tokens.
+- `youtube-analytics-pp-cli auth setup` prints the steps for registering a Google Cloud OAuth app (add `--launch` to open the page).
+- `youtube-analytics-pp-cli auth login --client-id <id> --client-secret <secret>` runs the browser OAuth flow and saves the tokens.
+- `youtube-analytics-pp-cli auth status` shows the current credential state.
+- `youtube-analytics-pp-cli auth logout` clears the stored tokens.
 
-`YOUTUBE_ANALYTICS_OAUTH2C` (a pre-minted raw access token) is also accepted as an advanced fallback, but it is not the recommended path — it expires quickly and the CLI cannot refresh it.
+`YOUTUBE_ANALYTICS_OAUTH2C` (a raw, pre-minted access token) is also accepted as a fallback, but it is not the path to use day to day. It expires fast and the CLI cannot refresh it.
 
 ## Quick Start
 
@@ -142,14 +142,14 @@ youtube-analytics-pp-cli doctor
 
 
 # Register a channel under a friendly name so later commands take --channel ScrollCore.
-youtube-analytics-pp-cli channels add --name ScrollCore --channel-id UC_x_CHANNEL_ID
+youtube-analytics-pp-cli channels add --name ScrollCore --channel-id UCxxxxxxxxxxxxxxxxxxxxxx
 
 
-# Build the local archive — every trend and comparison reads from it.
+# Build the local archive. Every trend and comparison reads from it.
 youtube-analytics-pp-cli sync --channel ScrollCore
 
 
-# The headline answer: last week's numbers with deltas vs the prior week.
+# The headline answer: last week's numbers, with the change vs the prior week.
 youtube-analytics-pp-cli report --channel ScrollCore --last 7d
 
 
@@ -160,72 +160,72 @@ youtube-analytics-pp-cli rollup --last 28d --sort revenue
 
 ## Unique Features
 
-These capabilities aren't available in any other tool for this API.
+No other tool for this API does these.
 
 ### Local archive that compounds
-- **`sync`** — Pull daily YouTube Analytics rows into a local SQLite archive so trends, comparisons, and history work offline.
+- **`sync`** pulls your daily YouTube Analytics rows into a local SQLite archive, so trends and comparisons work offline.
 
-  _Run this first — every report, comparison, and anomaly command reads the archive it builds._
+  _Run this first. Every report, comparison, and anomaly command reads the archive it builds._
 
   ```bash
   youtube-analytics-pp-cli sync --channel ScrollCore
   ```
-- **`report`** — Views, watch time, subscribers, and revenue for a period with the prior equal period and a delta beside each metric.
+- **`report`** shows views, watch time, subscribers, and revenue for a period, with the prior equal period and the change next to each metric.
 
-  _The fastest answer to 'how did this channel do, and is it up or down' — one call, deltas already computed._
+  _The fastest way to see how a channel did and whether it is up or down. The deltas are already computed._
 
   ```bash
   youtube-analytics-pp-cli report --channel ScrollCore --last 7d
   ```
-- **`whatchanged`** — Diffs two periods across every synced dimension and ranks the biggest movers — traffic sources, videos, revenue.
+- **`whatchanged`** compares two periods across every synced dimension and ranks the biggest movers: traffic sources, videos, revenue.
 
-  _Answers 'is the dip real and what moved' without diffing two dashboards by eye._
+  _Tells you whether a dip is real and what moved, without diffing two dashboards by eye._
 
   ```bash
   youtube-analytics-pp-cli whatchanged --channel ScrollCore --period last-week
   ```
-- **`anomaly`** — Flags metrics in the latest finalized period that fall outside the trailing mean and standard deviation.
+- **`anomaly`** flags any metric in the latest finalized period that falls outside its trailing mean and standard deviation.
 
   _Catches an RPM or view collapse early, before it eats a month of income._
 
   ```bash
   youtube-analytics-pp-cli anomaly --channel ScrollCore
   ```
-- **`rpm`** — Monthly RPM, CPM, and monetized playbacks as a stable series after trailing re-sync settles late revenue adjustments.
+- **`rpm`** reports monthly RPM, CPM, and monetized playbacks as a stable series, after the trailing re-sync settles late revenue adjustments.
 
-  _Use it to answer 'what was my RPM in February' with a number that no longer changes._
+  _Answers "what was my RPM in February" with a number that has stopped moving._
 
   ```bash
   youtube-analytics-pp-cli rpm --channel ScrollCore --by month
   ```
-- **`movers`** — Ranks videos by week-over-week view delta, surfacing both risers and faders.
+- **`movers`** ranks videos by week-over-week change in views, showing both the ones gaining and the ones fading.
 
-  _Shows which videos are gaining or losing momentum, not just which are biggest._
+  _Tells you which videos have momentum, not just which ones are biggest._
 
   ```bash
   youtube-analytics-pp-cli movers --channel ScrollCore --period last-week
   ```
 
 ### Multi-channel command
-- **`rollup`** — Every registered channel side by side for one period, one row per channel, sorted by views or revenue.
+- **`rollup`** shows every registered channel side by side for one period, one row per channel, sorted by views or revenue.
 
-  _Replaces logging into YouTube Studio once per channel — the whole portfolio in one table._
+  _Replaces logging into YouTube Studio once per channel. The whole portfolio in one table._
 
   ```bash
   youtube-analytics-pp-cli rollup --last 28d --sort revenue
   ```
-- **`channels`** — Maps friendly names like ScrollCore to channel IDs and credential sets so every command takes --channel by name.
+- **`channels`** maps friendly names like ScrollCore to channel IDs, so every command can take `--channel` by name.
 
-  _Register channels once; afterwards every command accepts a human name instead of a UC... ID._
+  _Register a channel once, then use its name instead of a UC... ID everywhere._
 
   ```bash
   youtube-analytics-pp-cli channels list
   ```
 
 ### Agent-native plumbing
-- **`sql`** — Runs read-only SQL directly against the local analytics archive for any aggregation the presets do not cover.
+- **`sql`** runs read-only SQL straight against the local analytics archive, for any aggregation the presets do not cover.
 
-  _Reach for this when a question does not match a preset — arbitrary slicing without another API call._
+  _Reach for this when a question does not match a preset. Arbitrary slicing, no extra API call._
 
   ```bash
   youtube-analytics-pp-cli sql "SELECT day, views FROM report_rows ORDER BY day DESC LIMIT 7"
@@ -273,25 +273,25 @@ youtube-analytics-pp-cli group-items list --json
 # Filter to specific fields
 youtube-analytics-pp-cli group-items list --json --select id,name,status
 
-# Dry run — show the request without sending
+# Dry run: show the request without sending it
 youtube-analytics-pp-cli group-items list --dry-run
 
-# Agent mode — JSON + compact + no prompts in one flag
+# Agent mode: JSON, compact, and no prompts in one flag
 youtube-analytics-pp-cli group-items list --agent
 ```
 
 ## Agent Usage
 
-This CLI is designed for AI agent consumption:
+This CLI is built for AI agents to call:
 
-- **Non-interactive** - never prompts, every input is a flag
-- **Pipeable** - `--json` output to stdout, errors to stderr
-- **Filterable** - `--select id,name` returns only fields you need
-- **Previewable** - `--dry-run` shows the request without sending
-- **Explicit retries** - add `--idempotent` to create retries and `--ignore-missing` to delete retries when a no-op success is acceptable
-- **Confirmable** - `--yes` for explicit confirmation of destructive actions
-- **Offline-friendly** - sync/search commands can use the local SQLite store when available
-- **Agent-safe by default** - no colors or formatting unless `--human-friendly` is set
+- **Non-interactive**: it never prompts; every input is a flag.
+- **Pipeable**: `--json` output to stdout, errors to stderr.
+- **Filterable**: `--select id,name` returns only the fields you ask for.
+- **Previewable**: `--dry-run` shows the request without sending it.
+- **Explicit retries**: add `--idempotent` to create retries and `--ignore-missing` to delete retries when a no-op should count as success.
+- **Confirmable**: `--yes` confirms a destructive action explicitly.
+- **Offline-friendly**: sync and search commands use the local SQLite store when it is available.
+- **Agent-safe by default**: no colors or formatting unless you pass `--human-friendly`.
 
 Exit codes: `0` success, `2` usage error, `3` not found, `4` auth error, `5` API error, `7` rate limited, `10` config error.
 
@@ -317,25 +317,27 @@ Environment variables:
 | `YOUTUBE_CLIENT_SECRET` | Yes (recommended path) | OAuth 2.0 client secret paired with the client ID. |
 | `YOUTUBE_REFRESH_TOKEN` | Yes (recommended path) | Refresh token scoped `yt-analytics.readonly` (add `yt-analytics-monetary.readonly` for revenue). The CLI exchanges it for an access token automatically. |
 | `YOUTUBE_ACCESS_TOKEN` | No | Pre-minted short-lived access token; used as-is when present. |
-| `YOUTUBE_ANALYTICS_OAUTH2C` | No (advanced fallback) | A raw pre-minted access token. Not the recommended path — it expires fast and cannot be refreshed. |
+| `YOUTUBE_ANALYTICS_OAUTH2C` | No (advanced fallback) | A raw pre-minted access token. Not the recommended path: it expires fast and cannot be refreshed. |
 
 Instead of environment variables you can run `youtube-analytics-pp-cli auth login --client-id <id> --client-secret <secret>` once; the CLI stores the resulting tokens in `config.toml`.
 
 ## Troubleshooting
+
 **Authentication errors (exit code 4)**
-- Run `youtube-analytics-pp-cli doctor` to check credentials
-- Verify the OAuth variables are set: `echo $YOUTUBE_CLIENT_ID $YOUTUBE_CLIENT_SECRET`, or run `youtube-analytics-pp-cli auth status`
-- If you have not set up credentials yet, run `youtube-analytics-pp-cli auth login --client-id <id> --client-secret <secret>`
+- Run `youtube-analytics-pp-cli doctor` to check credentials.
+- Verify the OAuth variables are set: `echo $YOUTUBE_CLIENT_ID $YOUTUBE_CLIENT_SECRET`, or run `youtube-analytics-pp-cli auth status`.
+- If you have not set up credentials yet, run `youtube-analytics-pp-cli auth login --client-id <id> --client-secret <secret>`.
+
 **Not found errors (exit code 3)**
-- Check the resource ID is correct
-- Run the `list` command to see available items
+- Check that the resource ID is correct.
+- Run the `list` command to see available items.
 
 ### API-specific
 
-- **Revenue metrics return 403 insufficient scope** — Re-issue the refresh token with the yt-analytics-monetary.readonly scope, not just yt-analytics.readonly.
-- **The last 2-3 days show zero or are missing** — Expected — YouTube finalizes data on a 2-3 day lag. Date presets like --last 7d already end the window 3 days back; pass --include-partial to override.
-- **HTTP 400 with an unknown metric or dimension error** — The metric and dimension combination is not a valid report; use a named preset, or check the metric is allowed with that dimension.
-- **401 Unauthorized on every call** — The refresh token is expired or revoked. Re-generate it in the Google Cloud console and update YOUTUBE_REFRESH_TOKEN.
+- **Revenue metrics return 403 insufficient scope.** Re-issue the refresh token with the `yt-analytics-monetary.readonly` scope, not just `yt-analytics.readonly`.
+- **The last 2-3 days show zero or are missing.** This is expected. YouTube finalizes data on a 2-3 day lag, so date presets like `--last 7d` already end the window 3 days back. Pass `--include-partial` to override that.
+- **HTTP 400 with an unknown metric or dimension error.** That metric and dimension combination is not a valid report. Use a named preset, or check that the metric is allowed with that dimension.
+- **401 Unauthorized on every call.** The refresh token is expired or revoked. Generate a new one in the Google Cloud console and update `YOUTUBE_REFRESH_TOKEN`.
 
 ---
 
@@ -343,7 +345,7 @@ Instead of environment variables you can run `youtube-analytics-pp-cli auth logi
 
 This CLI was built by studying these projects and resources:
 
-- [**googleapis/google-api-go-client**](https://github.com/googleapis/google-api-go-client) — Go (4200 stars)
-- [**dogfrogfog/youtube-analytics-mcp**](https://github.com/dogfrogfog/youtube-analytics-mcp) — TypeScript (3 stars)
+- [**googleapis/google-api-go-client**](https://github.com/googleapis/google-api-go-client) (Go, 4200 stars)
+- [**dogfrogfog/youtube-analytics-mcp**](https://github.com/dogfrogfog/youtube-analytics-mcp) (TypeScript, 3 stars)
 
-Generated by [CLI Printing Press](https://github.com/mvanhorn/cli-printing-press)
+Generated by [CLI Printing Press](https://github.com/mvanhorn/cli-printing-press).
