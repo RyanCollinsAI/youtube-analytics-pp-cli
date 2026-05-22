@@ -341,6 +341,20 @@ Instead of environment variables you can run `youtube-analytics-pp-cli auth logi
 
 ---
 
+## Changelog
+
+### 2026-05-21 - OAuth token endpoint fix
+
+Two bugs in the initial OAuth implementation caused authentication to fail silently.
+
+First, the token exchange endpoint was set to `accounts.google.com/o/oauth2/token`, which Google shut down in favor of `oauth2.googleapis.com/token`. Any attempt to trade an authorization code for tokens returned an error from the dead endpoint.
+
+Second, the authorization URL was missing the `access_type=offline` and `prompt=consent` query parameters. Without `access_type=offline`, Google does not issue a refresh token, so the CLI could only make API calls until the short-lived access token expired (about one hour) with no way to renew it. Without `prompt=consent`, users who had already granted access would not see the consent screen on subsequent logins and would not receive a fresh refresh token.
+
+Both issues are fixed in `internal/cli/auth.go` (authorization URL params and initial token exchange endpoint) and `internal/client/client.go` (token-refresh endpoint used when an access token expires). The config-file `token_url` field, loaded in `internal/config/config.go`, now also defaults to the correct endpoint and can be overridden for non-standard deployments.
+
+---
+
 ## Sources & Inspiration
 
 This CLI was built by studying these projects and resources:
