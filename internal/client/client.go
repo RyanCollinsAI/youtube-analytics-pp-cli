@@ -486,7 +486,7 @@ func (c *Client) refreshAccessToken() error {
 
 	tokenURL := c.Config.TokenURL
 	if tokenURL == "" {
-		tokenURL = "https://accounts.google.com/o/oauth2/token"
+		tokenURL = "https://oauth2.googleapis.com/token"
 	}
 
 	params := url.Values{

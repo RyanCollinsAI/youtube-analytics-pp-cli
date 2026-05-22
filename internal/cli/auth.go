@@ -132,6 +132,8 @@ func newAuthLoginCmd(flags *rootFlags) *cobra.Command {
 				"redirect_uri":  {redirectURI},
 				"response_type": {"code"},
 				"state":         {state},
+				"access_type":   {"offline"},
+				"prompt":        {"consent"},
 			}
 			scopes := []string{"https://www.googleapis.com/auth/youtube", "https://www.googleapis.com/auth/youtube.readonly", "https://www.googleapis.com/auth/youtubepartner", "https://www.googleapis.com/auth/yt-analytics-monetary.readonly", "https://www.googleapis.com/auth/yt-analytics.readonly"}
 			if len(scopes) > 0 {
@@ -186,7 +188,7 @@ func newAuthLoginCmd(flags *rootFlags) *cobra.Command {
 			tokenURL := ""
 			tokenURL = cfg.TokenURL
 			if tokenURL == "" {
-				tokenURL = "https://accounts.google.com/o/oauth2/token"
+				tokenURL = "https://oauth2.googleapis.com/token"
 			}
 			tokenParams := url.Values{
 				"grant_type":   {"authorization_code"},
